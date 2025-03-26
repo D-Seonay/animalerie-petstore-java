@@ -1,0 +1,26 @@
+stages:
+  - lint
+  - test
+
+lint:
+  stage: lint
+  script:
+    - mvn checkstyle:check
+
+sonarcloud:
+  stage: test
+  script:
+    - mvn clean verify sonar:sonar
+
+trivy:
+  stage: test
+  script:
+    - trivy fs --exit-code 1 --severity HIGH,CRITICAL .
+
+package:
+  stage: build
+  script:
+    - mvn clean package
+  artifacts:
+    paths:
+      - target/*.jar
